@@ -21,8 +21,10 @@ Väljs när man laddar klassen
 
 ### Kommandon
 
-* `\maketitle`: skriver ut titel och datum, givna av `\title{}` och `\date{}`.
-* `\makesign{Namn}`: rad för signatur med "Namn" under.
+* `\maketitle`: skriver ut titel, given av `\title{}`.
+* `\makewholepagetitle` gör en hel titelsida med titel, sektionens logga(biglogo.pdf) och subtitel som kan skrivas i `\subtitle{}`.
+* `\TitleHeadLeft{Titel}`: ändrar titeln i headern. Default beteende är att använda titeln som angets i `\title{}`.
+* `\TitleHeadRight{Titel}` lägger en titel i headern under kompileringsdatumet.
 
 
 ## `dtekprotokoll` class

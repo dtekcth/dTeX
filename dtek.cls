@@ -1,32 +1,26 @@
 % vim: set ft=tex:
-\NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{dtex}
-
-\newif\ifincludeaddress
-\includeaddresstrue
-\DeclareOption{noincludeaddress}{\includeaddressfalse}
+\ProvidesClass{dtek}
 
 \ProcessOptions\relax
 
 \LoadClass[11pt,a4paper]{article}
 
 \RequirePackage[quiet]{fontspec}
+\RequirePackage[swedish]{babel}
 \RequirePackage{parskip}
 \RequirePackage{graphicx}
 \RequirePackage{fancyhdr}
-\RequirePackage[swedish]{babel}
 \RequirePackage{lastpage}
 \RequirePackage[unicode]{hyperref}
 \RequirePackage[includeheadfoot, top=2.0cm, bottom=4cm]{geometry}
-\RequirePackage{xparse}
 \RequirePackage{collect}
+\RequirePackage{xparse}
 \RequirePackage{etoolbox}
-
-\RequirePackage{pdfpages}
+%\RequirePackage{pdfpages}
 \RequirePackage{navigator}
-
 \RequirePackage[shortlabels]{enumitem}
 \RequirePackage[titles]{tocloft}
+\RequirePackage{csquotes}
 
 \AtBeginDocument{
     \hypersetup{
@@ -38,6 +32,7 @@
         linkcolor=black,
         urlcolor=black
     }
+  \makeheadfoot
 }
 
 % Allows easy definition of commands
@@ -50,20 +45,43 @@
 %%% TITLE LOGIC %%%%%%
 
 \Definer \Title \TheTitle
+\Definer \Subtitle \TheSubtitle
 \Definer \TitleHeadLeft \TheTitleHeadLeft
+\TitleHeadLeft{\TheTitle}
 \Definer \TitleHeadRight \TheTitleHeadRight
 
 
 \DeclareDocumentCommand \maketitle {} {%
     {\centering \bf{\LARGE{\TheTitle}}\par}\par
+    {\centering \large{\TheSubtitle}\par}\par
 }
 
+\DeclareDocumentCommand \makewholepagetitle {} {%
+  \vspace*{\fill}
+  \begin{center}
+  {\Huge \textbf{\TheTitle}}
+  \par\bigskip
+  \includegraphics[width=300pt]{logo}
+  \par\bigskip
+  {\LARGE \TheSubtitle }
+  \end{center}
+  \vspace*{\fill}
+
+  \newpage
+}
+
+
 %%% HEADER & FOOTER LOGIC %%%%%%%%%%%
+
+\Definer \FooterMail \TheFooterMail
+\FooterMail{styret@dtek.se}
+\Definer \FooterWebsite \TheFooterWebsite
+\FooterWebsite{www.dtek.se}
 
 % use \renewcommand{\headleft} to override and customize this
 \newcommand{\headleft}{%
     % Name the logo "logga.*" in order for it to show up
-    \raisebox{-3mm}{\includegraphics[width=16mm]{logga}}\hspace{1mm}
+    \raisebox{-3mm}{\includegraphics[width=16mm]{logo}}\hspace{1mm}
     \parbox[b]{10cm}{%
         \textbf{Datateknologsektionen}\\
         Chalmers studentkår\\
@@ -81,7 +99,7 @@
 
 % use \renewcommand{\footleft} to override and customize this
 \newcommand{\footleft}{%
-    \flushleft Datateknologsektionen\\
+  \flushleft Datateknologsektionen\\
     Rännvägen 8 \\
     412 58 Göteborg
 }
@@ -89,8 +107,8 @@
 % use \renewcommand{\footright} to override and customize this
 \newcommand{\footright}{%
     \begin{flushright}
-        \href{mailto:styret@dtek.se}{styret@dtek.se}\\
-        \href{https://dtek.se}{www.dtek.se}
+        \TheFooterMail \\
+        \TheFooterWebsite 
     \end{flushright}
 }
 
@@ -99,8 +117,7 @@
     \fancyhf{}
 
     % Calculate header height
-    \settototalheight\headheight{\headleft}
-    \addtolength\headheight{1.0pt}
+    \addtolength\headheight{16mm}
 
     \lhead{\headleft}
     \rhead{\headright}
@@ -112,13 +129,51 @@
 
     \renewcommand{\footrulewidth}{\headrulewidth}
 
-    \ifincludeaddress
-        \lfoot{\footleft}
-        \rfoot{\footright}
-    \fi
+    \lfoot{\footleft}
+    \rfoot{\footright}
 }
 
 \DeclareDocumentCommand \makeheadfoot {}{\makehf}
+
+%%%%%%% Attsatser %%%%%%%%%%%%%%5
+
+\NewDocumentEnvironment{attsatser} {} {
+  \begin{itemize}
+  \DeclareDocumentCommand{\att} {}{\item \textbf{att }}
+}{
+  \end{itemize}
+}
+
+\NewDocumentEnvironment{arrlista} {} {
+  \section{Arrangemangslista}
+  \DeclareDocumentCommand{\arr} {m m}{#1 & #2 \\}
+  \begin{tabular}{rl}
+}{
+  \end{tabular}
+}
+
+\newlength{\mylength}
+\DeclareDocumentCommand \StatusWord { mm } {
+    \DeclareDocumentCommand #1 {
+        \par\medbreak\noindent
+        {\normalsize
+            \settowidth{\mylength}{#2}
+            \hspace{-\mylength}\hspace{-1em}#2
+            \hspace{1em}##2
+        }%
+        \ifx##1\EmptyLineOptionalArg\medbreak\noindent\fi
+    }
+}
+
+\StatusWord \Avslutat {Avslutat}
+\StatusWord \Kasserat {Kasserat}
+\StatusWord \Vilande {Väntar}
+\StatusWord \IFas {I Fas}
+\StatusWord \UrFas {Släpande}
+\StatusWord \klar {Klar}
+\StatusWord \pagar {Pågår}
+\StatusWord \kommande {Kommande}
+
 
 %%%%%%% MISC Logic %%%%%%%%%%%%%%
 %%
